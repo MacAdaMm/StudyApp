@@ -1,0 +1,7 @@
+IF DB_ID('PracticeQuestions') IS NOT NULL
+BEGIN
+	ALTER DATABASE PracticeQuestions SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE PracticeQuestions;
+END
+
+CREATE DATABASE PracticeQuestions;
