@@ -9,7 +9,7 @@ namespace StudyShared.Models
     {
         public int QuestionListId { get; set; }
         public string Name { get; set; }
-        public IList<Question> Questions { get; set; }
+        public List<Question> Questions { get; set; }
 
         public override string ToString()
         {

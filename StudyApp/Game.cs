@@ -16,23 +16,27 @@ namespace StudyApp
             "Exit Game"
         };
 
+        public string QuestionListName { get; private set; }
         public int Score { get; private set; }
         public int MaxScore { get; private set; }
 
+        private ConsoleService ConsoleService { get; }
         private IQuestionSetDao QuestionSetDao { get; }
-        private string QuestionListName { get; set; }
+        private Random Rng { get; }
+
+        private IList<string> QuestionListNames { get; set; }
         private QuestionList QuestionList { get; set; }
-        private Random Rng { get; set; }
         private Action CurrentState { get; set; }
-        private bool IsQuestionSetSelected => string.IsNullOrEmpty(QuestionListName) == false;
         private bool IsRunning { get; set; }
 
         public Game(IQuestionSetDao questionSetDao)
         {
             QuestionSetDao = questionSetDao;
+            ConsoleService = new ConsoleService();
+            Rng = new Random((int)DateTime.UtcNow.Ticks);
         }
 
-        public void Start()
+        public void Run()
         {
             IsRunning = true;
             CurrentState = MainMenu;
@@ -47,54 +51,46 @@ namespace StudyApp
         #region GameStates
         private void MainMenu()
         {
-            Console.WriteLine($"Selected Question Set: {QuestionListName}\n");
-            Console.WriteLine("Select Menu Option\n");
+            ConsoleService.PrintMainMenu(MAIN_MENU_ITEMS, QuestionListName);
+            int menuSelection = ConsoleService.PromptUserForSelection(MAIN_MENU_ITEMS.Length);
 
-            ConsoleHelpers.ListItems(MAIN_MENU_ITEMS);
-            int index = ConsoleHelpers.PromptUserForSelection(MAIN_MENU_ITEMS.Length);
-
-            if(index == 0)
+            if(menuSelection == 0)
             {
-                CurrentState = ListHighScores;
+                CurrentState = HighScoresMenu;
             }
-            else if (index == 1)
+            else if (menuSelection == 1)
             {
-                CurrentState = SelectQuestionSet;
+                CurrentState = SelectQuestionSetMenu;
             }
-            else if (index == 2)
+            else if (menuSelection == 2)
             {
-                if (IsQuestionSetSelected)
+                if (string.IsNullOrEmpty(QuestionListName))
                 {
-                    HandleGameSetup();
-                    CurrentState = GameLoop;
+                    ConsoleService.Pause("Please select a question set before playing. (press any key to continue)", ConsoleColor.Red);
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please select a question set before playing. (press any key to continue)");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.ReadKey();
+                    Play();
                 }
             }
-            else if(index == 3)
+            else if(menuSelection == 3)
             {
                 ExitGame();
             }
         }
-        private void ListHighScores()
+        private void HighScoresMenu()
         {
-            Console.WriteLine("Not Implemented. (press any key to continue)");
-            Console.ReadKey();
+            ConsoleService.Pause("Not Implemented. (press any key to continue)", ConsoleColor.Red);
             CurrentState = MainMenu;
         }
-        private void SelectQuestionSet()
+        private void SelectQuestionSetMenu()
         {
-            IList<string> names = QuestionSetDao.GetQuestionListNames();
+            QuestionListNames = QuestionSetDao.GetQuestionListNames();
 
-            ConsoleHelpers.ListItems(names);
-            int index = ConsoleHelpers.PromptUserForSelection(names.Count);
+            ConsoleService.ListMenuItems(QuestionListNames);
+            int index = ConsoleService.PromptUserForSelection(QuestionListNames.Count);
 
-            QuestionListName = names[index];
+            QuestionListName = QuestionListNames[index];
             
             CurrentState = MainMenu;
         }
@@ -102,13 +98,15 @@ namespace StudyApp
         {
             Question question = GetNextQuestion();
             bool answerIsCorrect = false;
-            bool IsSingleAnswer = question.Type == "Single Answer";
+            
+            string[] answers = question.Answers.Select(a => a.Text).ToArray();
+            ConsoleService.AskQuestion(question.Text, answers);
 
-            AskQuestion(question);
+            bool IsSingleAnswer = question.Type == "Single Answer";
 
             if (IsSingleAnswer)
             {
-                int index = ConsoleHelpers.PromptUserForSelection(question.Answers.Count);
+                int index = ConsoleService.PromptUserForSelection(question.Answers.Count);
                 answerIsCorrect = CheckAnswer(question, index);
             }
             else
@@ -124,25 +122,25 @@ namespace StudyApp
 
             if (QuestionList.Questions.Count == 0)
             {
-                CurrentState = GameOver;
+                CurrentState = GameOverMenu;
             }
         }
-        private void GameOver()
+        private void GameOverMenu()
         {
-            Console.WriteLine($"Score: {Score}/{MaxScore}");
-            Console.WriteLine("press any key to continue.");
-            Console.ReadKey();
+            ConsoleService.PrintGameOverScreen(Score, MaxScore);
             CurrentState = MainMenu;
         }
         #endregion
 
         #region GameFunctionality
-        private void HandleGameSetup()
+        private void Play()
         {
-            Rng = new Random((int)DateTime.UtcNow.Ticks);
-            QuestionList = QuestionSetDao.GetQuestionList(QuestionListName);
+            int index = QuestionListNames.IndexOf(QuestionListName) + 1; // hacky
+            QuestionList = QuestionSetDao.GetQuestionList(index); // this should be cloned and cached for reuse.
+
             Score = 0;
             MaxScore = QuestionList.Questions.Count;
+            CurrentState = GameLoop;
         }
         private void ExitGame() 
         { 
@@ -153,27 +151,22 @@ namespace StudyApp
             int i = Rng.Next(QuestionList.Questions.Count);
             Question question = QuestionList.Questions[i];
             QuestionList.Questions.RemoveAt(i);
+
             return question;
-        }
-        private void AskQuestion(Question question)
-        {
-            List<string> answers = question.Answers.Select(a => a.Text).ToList();
-            Console.WriteLine(question.Text + "\n");
-            ConsoleHelpers.ListItems(answers);
-            Console.WriteLine();
         }
         private bool CheckAnswer(Question question, string answerString, char delimiter)
         {
-            HashSet<int> resultSet = answerString.Split(delimiter)
-                    .Select(a => int.Parse(a))
-                    .ToHashSet();
+            HashSet<int> resultSet = answerString
+                .Split(delimiter)
+                .Select(a => int.Parse(a))
+                .ToHashSet();
 
             HashSet<int> expectedSet = new HashSet<int>();
             for (int i = 0; i < question.Answers.Count; i++)
             {
                 if (question.Answers[i].IsCorrect)
                 {
-                    expectedSet.Add(i);
+                    expectedSet.Add(i + 1);
                 }
             }
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using StudyAPI.DAO;
 using StudyShared.DAO;
 using StudyShared.Models;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ namespace StudyAPI.Controllers
 
         public QuestionListController(IConfiguration configuration)
         {
-            if(questionSetDao == null)
+            if (questionSetDao == null)
             {
                 questionSetDao = new QuestionSetSQLDao(configuration.GetConnectionString("PracticeQuestionDB"));
             }
@@ -30,10 +31,10 @@ namespace StudyAPI.Controllers
             return questionSetDao.GetQuestionLists();
         }
 
-        [HttpGet("{Id}")]
-        public QuestionList GetQuestionList(int Id)
+        [HttpGet("{id}")]
+        public QuestionList GetQuestionListById(int id)
         {
-            return questionSetDao.GetQuestionList(Id);
+            return questionSetDao.GetQuestionList(id);
         }
 
         [HttpGet("names")]

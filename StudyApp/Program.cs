@@ -10,7 +10,7 @@ namespace StudyApp
     {
         public static IConfigurationRoot Configuration { get; private set; }
 
-        static void Main(string[] args)
+        static void Main()
         {
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -18,11 +18,10 @@ namespace StudyApp
 
             Configuration = builder.Build();
 
-            IQuestionSetDao questionSetDao = new QuestionSetSQLDao(Configuration.GetConnectionString("PracticeQuestionDB"));
+            IQuestionSetDao questionSetDao = new StudyAPIService(Configuration.GetConnectionString("ApiURL"));
 
             Game game = new Game(questionSetDao);
-
-            game.Start();
+            game.Run();
         }
     }    
 }

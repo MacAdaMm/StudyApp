@@ -3,8 +3,9 @@ using StudyShared.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using StudyShared.DAO;
 
-namespace StudyShared.DAO
+namespace StudyAPI.DAO
 {
     public class QuestionSetSQLDao : IQuestionSetDao
     {
@@ -14,9 +15,9 @@ namespace StudyShared.DAO
             _connectionString = connectionString;
         }
 
-        public IList<string> GetQuestionListNames()
+        public List<string> GetQuestionListNames()
         {
-            IList<string> names = new List<string>();
+            List<string> names = new List<string>();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -75,9 +76,9 @@ namespace StudyShared.DAO
             return questionSet;
         }
 
-        public IList<QuestionList> GetQuestionLists()
+        public List<QuestionList> GetQuestionLists()
         {
-            IList<QuestionList> questionSets = new List<QuestionList>();
+            List<QuestionList> questionSets = new List<QuestionList>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
@@ -94,7 +95,7 @@ namespace StudyShared.DAO
             return questionSets;
         }
 
-        private IList<Question> GetQuestions(int ListId)
+        private List<Question> GetQuestions(int ListId)
         {
             List<Question> questions = new List<Question>();
 
@@ -119,7 +120,7 @@ namespace StudyShared.DAO
 
             return questions;
         }
-        private IList<Answer> GetAnswers(int questionId)
+        private List<Answer> GetAnswers(int questionId)
         {
             List<Answer> answers = new List<Answer>();
 
