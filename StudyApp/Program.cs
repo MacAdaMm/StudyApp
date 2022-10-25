@@ -18,7 +18,7 @@ namespace StudyApp
 
             Configuration = builder.Build();
 
-            IQuestionSetDao questionSetDao = new StudyAPIService(Configuration.GetConnectionString("ApiURL"));
+            IQuestionListDao questionSetDao = new StudyAPIService(Configuration.GetConnectionString("ApiURL"));
 
             Game game = new Game(questionSetDao);
             game.Run();

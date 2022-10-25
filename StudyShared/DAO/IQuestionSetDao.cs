@@ -4,7 +4,7 @@ using StudyShared.Models;
 
 namespace StudyShared.DAO
 {
-    public interface IQuestionSetDao
+    public interface IQuestionListDao
     {
         public List<string> GetQuestionListNames();
         public QuestionList GetQuestionList(int questionSetId);

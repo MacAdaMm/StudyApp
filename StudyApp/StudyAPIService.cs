@@ -8,7 +8,7 @@ using StudyShared.DAO;
 
 namespace StudyApp
 {
-    class StudyAPIService : IQuestionSetDao
+    class StudyAPIService : IQuestionListDao
     {
         readonly RestClient client;
         private const string QUESTIONLIST_ROUTE = "questionlist";
@@ -27,7 +27,7 @@ namespace StudyApp
             }
         }
 
-        List<string> IQuestionSetDao.GetQuestionListNames()
+        List<string> IQuestionListDao.GetQuestionListNames()
         {
             RestRequest request = new RestRequest(QUESTIONLIST_NAMES_ROUTE);
             IRestResponse<List<string>> response = client.Get<List<string>>(request);
@@ -52,7 +52,7 @@ namespace StudyApp
             return response.Data;
         }
 
-        List<QuestionList> IQuestionSetDao.GetQuestionLists()
+        List<QuestionList> IQuestionListDao.GetQuestionLists()
         {
             RestRequest request = new RestRequest(QUESTIONLIST_ROUTE);
             IRestResponse<List<QuestionList>> response = client.Get<List<QuestionList>>(request);

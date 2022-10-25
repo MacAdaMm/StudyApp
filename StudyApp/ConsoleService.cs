@@ -24,7 +24,6 @@ namespace StudyApp
             ListMenuItems(answers);
             Console.WriteLine();
         }
-
         public void ListMenuItems(IList<string> items)
         {
             for (int i = 0; i < items.Count; i++)
@@ -38,7 +37,9 @@ namespace StudyApp
         public int PromptUserForSelection(int maxValue)
         {
             int selection;
+            Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(">>> ");
+            Console.ForegroundColor = ConsoleColor.White;
             while (!int.TryParse(Console.ReadLine(), out selection) || selection <= 0 || selection > maxValue)
             {
                 Console.ForegroundColor = ConsoleColor.Red;

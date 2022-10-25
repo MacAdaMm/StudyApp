@@ -15,13 +15,13 @@ namespace StudyAPI.Controllers
     [ApiController]
     public class QuestionListController : ControllerBase
     {
-        private static IQuestionSetDao questionSetDao;
+        private static IQuestionListDao questionSetDao;
 
         public QuestionListController(IConfiguration configuration)
         {
             if (questionSetDao == null)
             {
-                questionSetDao = new QuestionSetSQLDao(configuration.GetConnectionString("PracticeQuestionDB"));
+                questionSetDao = new QuestionListSQLDao(configuration.GetConnectionString("PracticeQuestionDB"));
             }
         }
 

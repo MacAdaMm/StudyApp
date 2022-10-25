@@ -7,10 +7,10 @@ using StudyShared.DAO;
 
 namespace StudyAPI.DAO
 {
-    public class QuestionSetSQLDao : IQuestionSetDao
+    public class QuestionListSQLDao : IQuestionListDao
     {
         private readonly string _connectionString;
-        public QuestionSetSQLDao(string connectionString)
+        public QuestionListSQLDao(string connectionString)
         {
             _connectionString = connectionString;
         }

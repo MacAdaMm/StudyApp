@@ -21,7 +21,7 @@ namespace StudyApp
         public int MaxScore { get; private set; }
 
         private ConsoleService ConsoleService { get; }
-        private IQuestionSetDao QuestionSetDao { get; }
+        private IQuestionListDao QuestionSetDao { get; }
         private Random Rng { get; }
 
         private IList<string> QuestionListNames { get; set; }
@@ -29,11 +29,19 @@ namespace StudyApp
         private Action CurrentState { get; set; }
         private bool IsRunning { get; set; }
 
-        public Game(IQuestionSetDao questionSetDao)
+        public Game(IQuestionListDao questionSetDao, int? seed= null)
         {
             QuestionSetDao = questionSetDao;
             ConsoleService = new ConsoleService();
-            Rng = new Random((int)DateTime.UtcNow.Ticks);
+
+            if (seed.HasValue)
+            {
+                Rng = new Random(seed.Value);
+            }
+            else
+            {
+                Rng = new Random((int)DateTime.UtcNow.Ticks);
+            }
         }
 
         public void Run()
@@ -91,7 +99,6 @@ namespace StudyApp
             int index = ConsoleService.PromptUserForSelection(QuestionListNames.Count);
 
             QuestionListName = QuestionListNames[index];
-            
             CurrentState = MainMenu;
         }
         private void GameLoop()
