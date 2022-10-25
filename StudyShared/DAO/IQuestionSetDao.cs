@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using StudyApp.Models;
+using StudyShared.Models;
 
-namespace StudyApp.DAO
+namespace StudyShared.DAO
 {
     public interface IQuestionSetDao
     {

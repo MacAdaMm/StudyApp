@@ -1,8 +1,8 @@
 ﻿using System;
-using StudyApp.DAO;
+using StudyShared.DAO;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using StudyApp.Models;
+using StudyShared.Models;
 
 namespace StudyApp
 {
@@ -18,7 +18,7 @@ namespace StudyApp
 
             Configuration = builder.Build();
 
-            IQuestionSetDao questionSetDao = new QuestionSetSQLDao();
+            IQuestionSetDao questionSetDao = new QuestionSetSQLDao(Configuration.GetConnectionString("PracticeQuestionDB"));
 
             Game game = new Game(questionSetDao);
 

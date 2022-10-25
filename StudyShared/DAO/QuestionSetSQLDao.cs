@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
-using StudyApp.Models;
+using StudyShared.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
-namespace StudyApp.DAO
+namespace StudyShared.DAO
 {
     public class QuestionSetSQLDao : IQuestionSetDao
     {
         private readonly string _connectionString;
-        public QuestionSetSQLDao()
+        public QuestionSetSQLDao(string connectionString)
         {
-            _connectionString = Program.Configuration.GetConnectionString("PracticeQuestionDB");
+            _connectionString = connectionString;
         }
 
         public IList<string> GetQuestionListNames()

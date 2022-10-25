@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using StudyApp.DAO;
-using StudyApp.Models;
+using StudyShared.DAO;
+using StudyShared.Models;
 
 namespace StudyApp
 {
