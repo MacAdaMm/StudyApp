@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using StudyAPI.DAO;
 using StudyShared.DAO;
 using StudyShared.Models;
 using Microsoft.Extensions.Configuration;
@@ -15,32 +14,32 @@ namespace StudyAPI.Controllers
     [ApiController]
     public class QuestionListController : ControllerBase
     {
-        private static IQuestionListDao questionSetDao;
+        private static IQuestionListDao questionListDao;
 
-        public QuestionListController(IConfiguration configuration)
+        public QuestionListController(IQuestionListDao questionListDao)
         {
-            if (questionSetDao == null)
+            if (QuestionListController.questionListDao == null)
             {
-                questionSetDao = new QuestionListSQLDao(configuration.GetConnectionString("PracticeQuestionDB"));
+                QuestionListController.questionListDao = questionListDao;
             }
         }
 
         [HttpGet]
         public IList<QuestionList> GetQuestionLists()
         {
-            return questionSetDao.GetQuestionLists();
+            return questionListDao.GetQuestionLists();
         }
 
         [HttpGet("{id}")]
         public QuestionList GetQuestionListById(int id)
         {
-            return questionSetDao.GetQuestionList(id);
+            return questionListDao.GetQuestionList(id);
         }
 
         [HttpGet("names")]
         public IList<string> GetQuestionListNames()
         {
-            return questionSetDao.GetQuestionListNames();
+            return questionListDao.GetQuestionListNames();
         }
     }
 }

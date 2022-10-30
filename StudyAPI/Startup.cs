@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using StudyShared.DAO;
+using StudyAPI.DAO;
 
 namespace StudyAPI
 {
@@ -25,6 +27,9 @@ namespace StudyAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string connectionString = Configuration.GetConnectionString("PracticeQuestionDB");
+            services.AddTransient<IQuestionListDao>(sp => new QuestionListSQLDao(connectionString));
+
             services.AddControllers();
         }
 
@@ -35,12 +40,19 @@ namespace StudyAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseHttpsRedirection();
-
+            
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors((policy) =>
+            {
+                policy.AllowAnyHeader();
+                policy.AllowAnyOrigin();
+                policy.AllowAnyMethod();
+            });
 
             app.UseEndpoints(endpoints =>
             {
