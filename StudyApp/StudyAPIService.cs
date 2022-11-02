@@ -23,6 +23,7 @@ namespace StudyApp
         {
             if (!response.IsSuccessful)
             {
+                Console.WriteLine(errorMessage);
                 throw new HttpRequestException(errorMessage);
             }
         }
